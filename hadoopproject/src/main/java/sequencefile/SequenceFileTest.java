@@ -11,24 +11,25 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.util.ReflectionUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class SequenceFileTest {
 
-    private static final String INSTR = "hdfs://zgg:9000/in/sf";
-    private static final String OUTSTR = "hdfs://zgg:9000/out/sfile";
+    private static final String INSTR = "hdfs://bigdata101:9000/in/sf";
+    private static final String OUTSTR = "hdfs://bigdata101:9000/out/sfile";
 
     public static void main(String[] args) throws IOException{
-
         write(INSTR,OUTSTR);
-        read(OUTSTR);
-
+//        read(OUTSTR);
     }
 
     public static void write(String inStr,String outStr) throws IOException {
 
-
+        System.setProperty("HADOOP_USER_NAME","root");
 
         Configuration conf = new Configuration();
+        conf.set("mapred.jop.tracker", "hdfs://bigdata101:9001");
+        conf.set("fs.default.name", "hdfs://bigdata101:9000");
         FileSystem fs = FileSystem.get(conf);
 
         Text key = new Text();
@@ -37,7 +38,7 @@ public class SequenceFileTest {
         SequenceFile.Writer.Option fileOption = SequenceFile.Writer.file(new Path(outStr));
         SequenceFile.Writer.Option keyOption = SequenceFile.Writer.keyClass(key.getClass());
         SequenceFile.Writer.Option valueOption = SequenceFile.Writer.valueClass(value.getClass());
-        SequenceFile.Writer.Option compressionOption= SequenceFile.Writer.compression(SequenceFile.CompressionType.RECORD);
+        SequenceFile.Writer.Option compressionOption= SequenceFile.Writer.compression(SequenceFile.CompressionType.BLOCK);
 
         SequenceFile.Writer writer = SequenceFile.createWriter(
                 conf,fileOption,keyOption,valueOption,compressionOption
@@ -53,8 +54,9 @@ public class SequenceFileTest {
             int num = fsDataIn.read(buffer);
 
             key.set(fileStatus.getPath().toString());
+            System.out.println("key ---> " + fileStatus.getPath().toString());
             value.set(buffer);
-
+            System.out.println("value ---> " + buffer);
             writer.append(key, value);
         }
 
