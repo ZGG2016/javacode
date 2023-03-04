@@ -108,7 +108,7 @@ public class combine01 {
 				//显示次数表示输入的k2,v2的键值对数量
 				System.out.println("Combiner输入键值对<"+k2.toString()+","+count.get()+">");
 			}
-			
+
 			ctx.write(k2, new LongWritable(times));
 			//显示次数表示输出的k2,v2的键值对数量
 			System.out.println("Combiner输出键值对<"+k2.toString()+","+times+">");

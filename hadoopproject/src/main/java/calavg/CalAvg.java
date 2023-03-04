@@ -1,5 +1,6 @@
 package calavg;
 
+import combine.combine01;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -17,6 +18,7 @@ import wordcount.WordCount;
 import java.io.IOException;
 import java.net.URI;
 import java.text.DecimalFormat;
+import java.util.Properties;
 
 /*
 * 需求：计算每个学生的平均分
@@ -37,11 +39,14 @@ import java.text.DecimalFormat;
 * */
 public class CalAvg {
 
-    private static final String INPUT_PATH = "hdfs://zgg:9000/in/calavg.txt";
-    private static final String OUTPUT_PATH = "hdfs://zgg:9000/out/calavg";
+    private static final String INPUT_PATH = "hdfs://bigdata101:9000/in/calavg.txt";
+    private static final String OUTPUT_PATH = "hdfs://bigdata101:9000/out/calavg";
 
     public static void main(String[] args) throws Exception {
         BasicConfigurator.configure();
+        Properties properties = System.getProperties();
+        properties.setProperty("HADOOP_USER_NAME","root");
+
         Configuration conf = new Configuration();
 
         FileSystem fs = FileSystem.get(new URI(INPUT_PATH), conf);
@@ -51,7 +56,7 @@ public class CalAvg {
         }
 
         Job job = Job.getInstance(conf);
-        job.setJarByClass(WordCount.class);
+        job.setJarByClass(CalAvg.class);
 
         job.setMapperClass(CalAvgMapper.class);
         job.setMapOutputKeyClass(Text.class);
